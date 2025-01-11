@@ -3,9 +3,8 @@ import { Provider } from 'react-redux';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 
-import AppRoutes from './routes'
+import AppRoutes from './routes';
 import theme from './styles/theme';
-
 
 function App() {
   return (
@@ -15,7 +14,7 @@ function App() {
         <AppRoutes />
       </ThemeProvider>
     </Provider>
-  )
+  );
 }
 
-export default App
+export default App;
