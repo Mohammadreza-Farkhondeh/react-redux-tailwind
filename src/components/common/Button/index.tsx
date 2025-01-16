@@ -4,7 +4,7 @@ import {
 } from '@mui/material';
 
 interface ButtonProps extends Omit<MuiButtonProps, 'variant'> {
-  variant?: 'primary' | 'secondary' | 'text' | 'outline';
+  variant?: 'primary' | 'secondary' | 'text' | 'outline' | 'contained';
 }
 
 const variantMapping = {
