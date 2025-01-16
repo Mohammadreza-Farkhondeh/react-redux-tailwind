@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate-api": "swagger-typescript-api -p http://127.0.0.1:8000/openapi.json -o ./src/api/ -n Api.ts  --axios"
+    "generate-api": "swagger-typescript-api -p http://127.0.0.1:8000/api/schema/ -o ./src/api/ -n Api.ts  --axios"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
