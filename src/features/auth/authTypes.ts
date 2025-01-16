@@ -1,25 +1,26 @@
 import type {
-  LoginRequest,
-  LoginResponse,
+  TokenObtainPairRequest,
+  TokenObtainPairResponse,
+  TokenRefreshRequest,
+  TokenRefreshResponse,
   RegisterRequest,
-  RegisterResponse,
-  User,
-  MeResponse,
+  UserProfile,
 } from '../../api/Api';
 
 export interface AuthState {
-  user: User | null;
-  token: string | null;
+  user: UserProfile | null;
+  access: string | null;
+  refresh: string | null;
   isAuthenticated: boolean;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
 
 export type {
-  LoginRequest,
-  LoginResponse,
+  TokenObtainPairRequest,
+  TokenObtainPairResponse,
+  TokenRefreshRequest,
+  TokenRefreshResponse,
   RegisterRequest,
-  RegisterResponse,
-  MeResponse,
-  User,
+  UserProfile,
 };

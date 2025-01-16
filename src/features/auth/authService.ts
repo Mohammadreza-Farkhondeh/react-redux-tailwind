@@ -1,21 +1,29 @@
 import { apiService } from '../../api/api.service';
-import type { LoginRequest, RegisterRequest } from './authTypes';
+import type {
+  RegisterRequest,
+  TokenObtainPairRequest,
+  TokenRefreshRequest,
+} from './authTypes';
 
 export class AuthService {
-  static async login(credentials: LoginRequest) {
-    return await apiService.auth.login({ ...credentials });
+  static async login(credentials: TokenObtainPairRequest) {
+    return await apiService.auth.authTokenObtainCreate({ ...credentials });
   }
 
   static async register(credentials: RegisterRequest) {
-    return await apiService.auth.register({ ...credentials });
+    return await apiService.auth.authRegisterCreate({ ...credentials });
+  }
+
+  static async refresh(credentials: TokenRefreshRequest) {
+    return await apiService.auth.authTokenRefreshCreate({ ...credentials });
   }
 
   static async logout() {
-    return await apiService.auth.logout();
+    localStorage.removeItem('user');
   }
 
   static async getCurrentUser() {
-    return await apiService.auth.me();
+    return await apiService.auth.authProfileRetrieve();
   }
 }
 

@@ -1,14 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { AuthState } from './authTypes';
-
-import { login, register, logout, getCurrentUser } from './authActions';
+import {
+  login,
+  register,
+  logout,
+  getCurrentUser,
+  refresh,
+} from './authActions';
 
 const initialState: AuthState = {
   user: localStorage.getItem('user')
     ? JSON.parse(localStorage.getItem('user')!)
     : null,
-  token: localStorage.getItem('token'),
-  isAuthenticated: !!localStorage.getItem('token'),
+  access: localStorage.getItem('accessToken'),
+  refresh: localStorage.getItem('refreshToken'),
+  isAuthenticated: !!localStorage.getItem('user'),
   status: 'idle',
   error: null,
 };
@@ -31,8 +37,8 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.access = action.payload.access;
+        state.refresh = action.payload.refresh;
         state.isAuthenticated = true;
       })
       .addCase(login.rejected, (state, action) => {
@@ -46,9 +52,7 @@ const authSlice = createSlice({
       })
       .addCase(register.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        //   state.user = action.payload.user;
-        //   state.token = action.payload.token;
-        state.isAuthenticated = true;
+        state.user = action.payload;
       })
       .addCase(register.rejected, (state, action) => {
         state.status = 'failed';
@@ -57,7 +61,8 @@ const authSlice = createSlice({
       // Logout
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
-        state.token = null;
+        state.access = null;
+        state.refresh = null;
         state.isAuthenticated = false;
         state.status = 'idle';
       })
@@ -67,10 +72,24 @@ const authSlice = createSlice({
       })
       .addCase(getCurrentUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.user = action.payload.user;
+        state.user = action.payload;
         state.isAuthenticated = true;
       })
       .addCase(getCurrentUser.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+        state.isAuthenticated = false;
+      })
+      // Refresh
+      .addCase(refresh.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(refresh.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.access = action.payload.access;
+      })
+      .addCase(refresh.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
         state.isAuthenticated = false;
