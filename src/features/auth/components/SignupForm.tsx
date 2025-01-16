@@ -3,14 +3,15 @@ import { useAppDispatch, useAppSelector } from '../../../store';
 import { resetAuthState } from '../authSlice';
 import { register } from '../authActions';
 import type { RegisterRequest } from '../authTypes';
-import { TextField, Button, Alert } from '@mui/material';
+import { Alert } from '../../../components/common/Alert';
+import { TextField } from '../../../components/common/TextField';
+import { Button } from '../../../components/common/Button';
 
 export const SignupForm = () => {
   const dispatch = useAppDispatch();
   const { status, error } = useAppSelector((state) => state.auth);
   const [credentials, setCredentials] = useState<RegisterRequest>({
     username: '',
-    email: '',
     password: '',
   });
 
