@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Container, Paper, Typography } from '@mui/material';
 import { LoginForm } from '../components/LoginForm';
 import { useAppSelector } from '../../../store';
-import { Navbar } from '../../../components/navigation/Navbar';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -16,16 +15,13 @@ export const LoginPage = () => {
   }, [isAuthenticated, navigate]);
 
   return (
-    <>
-      <Navbar title="waiotech" />
-      <Container maxWidth="sm">
-        <Paper sx={{ p: 4, mt: 8 }}>
-          <Typography variant="h4" align="center" gutterBottom>
-            Login
-          </Typography>
-          <LoginForm />
-        </Paper>
-      </Container>
-    </>
+    <Container maxWidth="sm">
+      <Paper sx={{ p: 4, mt: 8 }}>
+        <Typography variant="h4" align="center" gutterBottom>
+          Login
+        </Typography>
+        <LoginForm />
+      </Paper>
+    </Container>
   );
 };

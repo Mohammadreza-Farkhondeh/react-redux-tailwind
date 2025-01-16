@@ -3,7 +3,9 @@ import { useAppDispatch, useAppSelector } from '../../../store';
 import { resetAuthState } from '../authSlice';
 import { login } from '../authActions';
 import type { LoginRequest } from '../authTypes';
-import { TextField, Button, Alert } from '@mui/material';
+import { Alert } from '../../../components/common/Alert';
+import { TextField } from '../../../components/common/TextField';
+import { Button } from '../../../components/common/Button';
 
 export const LoginForm = () => {
   const dispatch = useAppDispatch();
@@ -32,9 +34,9 @@ export const LoginForm = () => {
       <TextField
         fullWidth
         margin="normal"
-        label="Email"
-        name="email"
-        type="email"
+        label="Username"
+        name="username"
+        type="text"
         value={credentials.username}
         onChange={handleChange}
         required
