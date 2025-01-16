@@ -4,9 +4,11 @@ import type { AuthState } from './authTypes';
 import { login, register, logout, getCurrentUser } from './authActions';
 
 const initialState: AuthState = {
-  user: null,
+  user: localStorage.getItem('user')
+    ? JSON.parse(localStorage.getItem('user')!)
+    : null,
   token: localStorage.getItem('token'),
-  isAuthenticated: false,
+  isAuthenticated: !!localStorage.getItem('token'),
   status: 'idle',
   error: null,
 };
