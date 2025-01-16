@@ -3,11 +3,11 @@ import type { LoginRequest, RegisterRequest } from './authTypes';
 
 export class AuthService {
   static async login(credentials: LoginRequest) {
-    return await apiService.auth.login({ data: credentials });
+    return await apiService.auth.login({ ...credentials });
   }
 
   static async register(credentials: RegisterRequest) {
-    return await apiService.auth.register({ data: credentials });
+    return await apiService.auth.register({ ...credentials });
   }
 
   static async logout() {
