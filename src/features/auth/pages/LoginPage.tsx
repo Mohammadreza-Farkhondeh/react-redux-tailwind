@@ -4,7 +4,7 @@ import { Container, Paper, Typography } from '@mui/material';
 import { LoginForm } from '../components/LoginForm';
 import { useAppSelector } from '../../../store';
 
-export const LoginPage = () => {
+const LoginPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
@@ -25,3 +25,5 @@ export const LoginPage = () => {
     </Container>
   );
 };
+
+export default LoginPage;

@@ -4,7 +4,7 @@ import { Container, Paper, Typography } from '@mui/material';
 import { useAppSelector } from '../../../store';
 import { SignupForm } from '../components/SignupForm';
 
-export const SignupPage = () => {
+const SignupPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
@@ -25,3 +25,5 @@ export const SignupPage = () => {
     </Container>
   );
 };
+
+export default SignupPage;
