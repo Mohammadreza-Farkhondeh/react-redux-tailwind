@@ -1,10 +1,12 @@
-import { store } from './store';
+import { RouterProvider } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
-import AppRoutes from './routes';
 import theme from './styles/theme';
 import AppLayout from './AppLayout';
+
+import router from './routes';
+import { store } from './store';
 
 function App() {
   return (
@@ -12,7 +14,7 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AppLayout>
-          <AppRoutes />
+        <RouterProvider router={router} />
         </AppLayout>
       </ThemeProvider>
     </Provider>
