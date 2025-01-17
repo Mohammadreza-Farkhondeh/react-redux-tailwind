@@ -1,25 +1,28 @@
 import { lazy } from 'react';
 
-import Loadable from 'ui-component/Loadable';
-import MinimalLayout from 'layout/MinimalLayout';
+import Loadable from '../components/layout/Loadable';
+import AuthLayout from '../layouts/AuthLayout';
 
-const LoginPage = Loadable(lazy(() => import('features/auth/pages/LoginPage')));
-const SignupPage = Loadable(lazy(() => import('features/auth/pages/SignupPage')));
-
+const LoginPage = Loadable(
+  lazy(() => import('../features/auth/pages/LoginPage'))
+);
+const SignupPage = Loadable(
+  lazy(() => import('../features/auth/pages/SignupPage'))
+);
 
 const AuthRoutes = {
   path: '/',
-  element: <MinimalLayout />,
+  element: <AuthLayout />,
   children: [
     {
       path: '/login',
-      element: <LoginPage />
+      element: <LoginPage />,
     },
     {
-      path: '/register',
-      element: <SignupPage />
-    }
-  ]
+      path: '/signup',
+      element: <SignupPage />,
+    },
+  ],
 };
 
 export default AuthRoutes;
