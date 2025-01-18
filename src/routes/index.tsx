@@ -1,15 +1,9 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 
-const Home = () => <div>Home</div>;
-const About = () => <div>About</div>;
+import AuthRoutes from './AuthRoutes';
 
-const AppRoutes = () => (
-  <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/about" element={<About />} />
-    </Routes>
-  </BrowserRouter>
-);
+const router = createBrowserRouter([AuthRoutes], {
+  basename: import.meta.env.VITE_APP_BASE_NAME || '/',
+});
 
-export default AppRoutes;
+export default router;
