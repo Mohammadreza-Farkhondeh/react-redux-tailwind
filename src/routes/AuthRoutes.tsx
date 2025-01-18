@@ -6,9 +6,9 @@ const LoginPage = Loadable(
   lazy(() => import('@/features/auth/pages/LoginPage'))
 );
 
-// const SignupPage = Loadable(
-// lazy(() => import('@/features/auth/pages/SignupPage'))
-// )
+const SignupPage = Loadable(
+lazy(() => import('@/features/auth/pages/SignupPage'))
+)
 
 const AuthRoutes = {
   path: '/',
@@ -18,10 +18,10 @@ const AuthRoutes = {
       path: '/login',
       element: <LoginPage />,
     },
-    // {
-    // path: '/signup',
-    // element: <SignupPage />,
-    // },
+    {
+    path: '/signup',
+    element: <SignupPage />,
+    },
   ],
 };
 
