@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { AuthState } from './authTypes';
+import { AuthService } from './authService';
 import {
   login,
   register,
@@ -8,13 +9,15 @@ import {
   refresh,
 } from './authActions';
 
+const { access, refresh: refreshToken } = AuthService.getStoredTokens();
+
 const initialState: AuthState = {
   user: localStorage.getItem('user')
     ? JSON.parse(localStorage.getItem('user')!)
     : null,
-  access: localStorage.getItem('accessToken'),
-  refresh: localStorage.getItem('refreshToken'),
-  isAuthenticated: !!localStorage.getItem('user'),
+  access,
+  refresh: refreshToken,
+  isAuthenticated: !!access,
   status: 'idle',
   error: null,
 };

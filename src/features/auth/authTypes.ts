@@ -1,17 +1,41 @@
 import { z } from 'zod';
+import type {
+  TokenObtainPairRequest,
+  TokenObtainPairResponse,
+  TokenRefreshRequest,
+  TokenRefreshResponse,
+  RegisterRequest,
+  UserProfile,
+} from '@/api/Api';
+
+export interface LoginFormData extends TokenObtainPairRequest {
+  rememberMe?: boolean;
+}
 
 export const loginSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address' }),
-  password: z
+  email: z
     .string()
-    .min(8, { message: 'Password must be at least 8 characters' }),
+    .email({ message: 'Please enter a valid email address' })
+    .max(254, 'Email must be 254 characters or less'),
+  password: z.string(),
+  rememberMe: z.boolean().optional(),
 });
 
-export const registerSchema = loginSchema
-  .extend({
+export const registerSchema = z
+  .object({
     username: z
       .string()
-      .min(3, { message: 'Username must be at least 3 characters' }),
+      .min(1, 'Username is required')
+      .max(150, 'Username must be 150 characters or less')
+      .regex(
+        /^[\w.@+-]+$/,
+        'Username can only contain letters, numbers, and @/./+/-/_'
+      ),
+    email: z
+      .string()
+      .email({ message: 'Please enter a valid email address' })
+      .max(254, 'Email must be 254 characters or less'),
+    password: z.string(),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -19,16 +43,17 @@ export const registerSchema = loginSchema
     path: ['confirmPassword'],
   });
 
-export type LoginFormData = z.infer<typeof loginSchema>;
-export type RegisterFormData = z.infer<typeof registerSchema>;
+export type {
+  UserProfile,
+  TokenObtainPairResponse,
+  TokenObtainPairRequest,
+  TokenRefreshRequest,
+  TokenRefreshResponse,
+  RegisterRequest,
+};
 
-export interface UserProfile {
-  id: string;
-  username: string;
-  email: string;
-  created_at: string;
-  updated_at: string;
-}
+export type LoginFormFields = z.infer<typeof loginSchema>;
+export type RegisterFormFields = z.infer<typeof registerSchema>;
 
 export interface AuthState {
   user: UserProfile | null;
@@ -38,17 +63,3 @@ export interface AuthState {
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
-
-export interface TokenResponse {
-  access: string;
-  refresh: string;
-}
-
-export type {
-  TokenResponse as TokenObtainPairResponse,
-  TokenResponse as TokenRefreshResponse,
-};
-
-export type TokenObtainPairRequest = LoginFormData;
-export type TokenRefreshRequest = { refresh: string };
-export type RegisterRequest = RegisterFormData;
