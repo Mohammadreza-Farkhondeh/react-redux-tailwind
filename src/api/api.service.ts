@@ -4,6 +4,8 @@ import { refresh } from '../features/auth/authActions';
 
 class ApiService extends Api<unknown> {
   private static instance: ApiService;
+  private isRefreshing = false;
+  private refreshTokenPromise: Promise<void> | null = null;
 
   private constructor() {
     super({
@@ -25,24 +27,53 @@ class ApiService extends Api<unknown> {
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
-        if (error.response?.status === 401 && !originalRequest._retry) {
-          originalRequest._retry = true;
-          try {
-            const resultAction = await store.dispatch(refresh());
 
-            if (refresh.fulfilled.match(resultAction)) {
-              const newToken = resultAction.payload.access;
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          if (!this.isRefreshing) {
+            this.isRefreshing = true;
+            
+            try {
+              if (!this.refreshTokenPromise) {
+                this.refreshTokenPromise = new Promise(async (resolve, reject) => {
+                  try {
+                    const resultAction = await store.dispatch(refresh());
+
+                    if (refresh.fulfilled.match(resultAction)) {
+                      resolve();
+                    } else {
+                      reject();
+                    }
+                  } catch (err) {
+                    reject(err);
+                  }
+                });
+              }
+
+              await this.refreshTokenPromise;
+
+              const newToken = store.getState().auth.access;
               originalRequest.headers.Authorization = `Bearer ${newToken}`;
+              originalRequest._retry = true;
+
               return this.instance(originalRequest);
-            } else {
+            } catch (refreshError) {
               store.dispatch({ type: 'auth/logout' });
-              return Promise.reject(
-                resultAction.payload || 'Refresh token failed'
-              );
+              return Promise.reject(refreshError);
+            } finally {
+              this.isRefreshing = false;
+              this.refreshTokenPromise = null;
             }
-          } catch (err) {
-            store.dispatch({ type: 'auth/logout' });
-            return Promise.reject(err);
+          } else {
+            try {
+              await this.refreshTokenPromise;
+              const newToken = store.getState().auth.access;
+              originalRequest.headers.Authorization = `Bearer ${newToken}`;
+              originalRequest._retry = true;
+              return this.instance(originalRequest);
+            } catch {
+              store.dispatch({ type: 'auth/logout' });
+              return Promise.reject(error);
+            }
           }
         }
         return Promise.reject(error);
