@@ -2,8 +2,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { register as registerAction } from '@/features/auth/authActions';
-import { RegisterFormData, registerSchema } from '@/features/auth/authTypes';
+import { signup as signupAction } from '@/features/auth/authActions';
+import { SignupFormFields, signupSchema } from '@/features/auth/authTypes';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -24,8 +24,8 @@ export default function SignupPage() {
   const { toast } = useToast();
   const { status, error } = useAppSelector((state) => state.auth);
 
-  const form = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
+  const form = useForm<SignupFormFields>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
       username: '',
       email: '',
@@ -34,9 +34,9 @@ export default function SignupPage() {
     },
   });
 
-  const onSubmit = async (data: RegisterFormData) => {
+  const onSubmit = async (data: SignupFormFields) => {
     try {
-      await dispatch(registerAction(data)).unwrap();
+      await dispatch(signupAction(data)).unwrap();
       toast({
         title: 'Success',
         description: 'Your account has been created successfully.',

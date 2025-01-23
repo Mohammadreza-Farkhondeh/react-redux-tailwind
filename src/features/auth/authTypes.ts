@@ -1,14 +1,14 @@
 import { z } from 'zod';
 import type {
-  TokenObtainPairRequest,
-  TokenObtainPairResponse,
+  SignupRequest,
+  SignupResponse,
+  TokenObtainRequest,
   TokenRefreshRequest,
-  TokenRefreshResponse,
-  RegisterRequest,
-  UserProfile,
+  TokenResponse,
+  UserOut
 } from '@/api/Api';
 
-export interface LoginFormData extends TokenObtainPairRequest {
+export interface LoginFormData extends TokenObtainRequest {
   rememberMe?: boolean;
 }
 
@@ -21,7 +21,7 @@ export const loginSchema = z.object({
   rememberMe: z.boolean().optional(),
 });
 
-export const registerSchema = z
+export const signupSchema = z
   .object({
     username: z
       .string()
@@ -44,19 +44,19 @@ export const registerSchema = z
   });
 
 export type {
-  UserProfile,
-  TokenObtainPairResponse,
-  TokenObtainPairRequest,
+  SignupRequest,
+  SignupResponse,
+  TokenObtainRequest,
   TokenRefreshRequest,
-  TokenRefreshResponse,
-  RegisterRequest,
+  TokenResponse,
+  UserOut
 };
 
 export type LoginFormFields = z.infer<typeof loginSchema>;
-export type RegisterFormFields = z.infer<typeof registerSchema>;
+export type SignupFormFields = z.infer<typeof signupSchema>;
 
 export interface AuthState {
-  user: UserProfile | null;
+  user: UserOut | null;
   access: string | null;
   refresh: string | null;
   isAuthenticated: boolean;

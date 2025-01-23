@@ -1,17 +1,18 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AuthService } from './authService';
 import type {
-  RegisterRequest,
-  UserProfile,
-  TokenObtainPairRequest,
-  TokenObtainPairResponse,
-  TokenRefreshResponse,
+  SignupRequest,
+  SignupResponse,
+  TokenObtainRequest,
+  TokenRefreshRequest,
+  TokenResponse,
+  UserOut
 } from './authTypes';
 import { RootState } from '../../store';
 
 export const login = createAsyncThunk<
-  TokenObtainPairResponse,
-  TokenObtainPairRequest,
+  TokenResponse,
+  TokenObtainRequest,
   { rejectValue: string }
 >('auth/login', async (credentials, { rejectWithValue }) => {
   try {
@@ -27,13 +28,13 @@ export const login = createAsyncThunk<
   }
 });
 
-export const register = createAsyncThunk<
-  UserProfile,
-  RegisterRequest,
+export const signup = createAsyncThunk<
+  SignupResponse,
+  SignupRequest,
   { rejectValue: string }
->('auth/register', async (credentials, { rejectWithValue }) => {
+>('auth/signup', async (credentials, { rejectWithValue }) => {
   try {
-    const data = await AuthService.register(credentials);
+    const data = await AuthService.signup(credentials);
     localStorage.setItem('user', JSON.stringify(data));
     return data;
   } catch (error) {
@@ -45,8 +46,8 @@ export const register = createAsyncThunk<
 });
 
 export const refresh = createAsyncThunk<
-  TokenRefreshResponse,
-  void,
+  TokenResponse,
+  TokenRefreshRequest,
   { rejectValue: string; state: { auth: RootState['auth'] } }
 >('auth/refresh', async (_, { rejectWithValue, getState }) => {
   try {
@@ -82,7 +83,7 @@ export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
 );
 
 export const getCurrentUser = createAsyncThunk<
-  UserProfile,
+  UserOut,
   void,
   { rejectValue: string }
 >('auth/getCurrentUser', async (_, { rejectWithValue }) => {

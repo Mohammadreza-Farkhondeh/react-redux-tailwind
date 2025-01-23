@@ -1,11 +1,11 @@
 import { apiService } from '../../api/api.service';
 import type {
-  RegisterRequest,
-  TokenObtainPairRequest,
+  SignupRequest,
+  SignupResponse,
+  TokenObtainRequest,
   TokenRefreshRequest,
-  UserProfile,
-  TokenObtainPairResponse,
-  TokenRefreshResponse,
+  TokenResponse,
+  UserOut
 } from './authTypes';
 
 class AuthError extends Error {
@@ -20,10 +20,10 @@ class AuthError extends Error {
 
 export class AuthService {
   static async login(
-    credentials: TokenObtainPairRequest & { rememberMe?: boolean }
-  ): Promise<TokenObtainPairResponse> {
+    credentials: TokenObtainRequest & { rememberMe?: boolean }
+  ): Promise<TokenResponse> {
     try {
-      const response = await apiService.auth.authTokenObtainCreate(credentials);
+      const response = await apiService.auth.obtainTokenAuthTokenObtainPost(credentials);
 
       if (credentials.rememberMe) {
         localStorage.setItem('accessToken', response.data.access);
@@ -42,9 +42,9 @@ export class AuthService {
     }
   }
 
-  static async register(credentials: RegisterRequest): Promise<UserProfile> {
+  static async signup(credentials: SignupRequest): Promise<SignupResponse> {
     try {
-      const response = await apiService.auth.authRegisterCreate(credentials);
+      const response = await apiService.auth.signupUserAuthSignupPost(credentials);
       return response.data;
     } catch (error) {
       throw new AuthError(
@@ -56,10 +56,10 @@ export class AuthService {
 
   static async refresh(
     credentials: TokenRefreshRequest
-  ): Promise<TokenRefreshResponse> {
+  ): Promise<TokenResponse> {
     try {
       const response =
-        await apiService.auth.authTokenRefreshCreate(credentials);
+        await apiService.auth.refreshTokenAuthTokenRefreshPost(credentials);
       return response.data;
     } catch (error) {
       throw new AuthError(
@@ -78,7 +78,7 @@ export class AuthService {
     localStorage.removeItem('rememberedEmail');
   }
 
-  static async getCurrentUser(): Promise<UserProfile> {
+  static async getCurrentUser(): Promise<UserOut> {
     try {
       const response = await apiService.auth.authProfileRetrieve();
       return response.data;

@@ -3,7 +3,7 @@ import type { AuthState } from './authTypes';
 import { AuthService } from './authService';
 import {
   login,
-  register,
+  signup,
   logout,
   getCurrentUser,
   refresh,
@@ -48,16 +48,16 @@ const authSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload as string;
       })
-      // Register
-      .addCase(register.pending, (state) => {
+      // signup
+      .addCase(signup.pending, (state) => {
         state.status = 'loading';
         state.error = null;
       })
-      .addCase(register.fulfilled, (state, action) => {
+      .addCase(signup.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.user = action.payload;
+        state.user = action.payload.user;
       })
-      .addCase(register.rejected, (state, action) => {
+      .addCase(signup.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
       })
