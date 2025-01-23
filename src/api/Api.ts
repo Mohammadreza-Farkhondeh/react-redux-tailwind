@@ -9,73 +9,120 @@
  * ---------------------------------------------------------------
  */
 
-export interface RegisterRequest {
-  /**
-   * Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
-   * @maxLength 150
-   * @pattern ^[\w.@+-]+$
-   */
+/** HTTPValidationError */
+export interface HTTPValidationError {
+  /** Detail */
+  detail?: ValidationError[];
+}
+
+/**
+ * SignupRequest
+ * Schema for user registration requests.
+ * Inherits from UserCreate to avoid redundancy.
+ */
+export interface SignupRequest {
+  /** Username */
   username: string;
   /**
-   * Email address
+   * Email
    * @format email
-   * @maxLength 254
    */
-  email?: string;
+  email: string;
+  /**
+   * Password
+   * @minLength 8
+   * @example "strongpassword123"
+   */
   password: string;
 }
 
-export interface TokenObtainPairRequest {
-  username: string;
+/**
+ * SignupResponse
+ * Schema for user registration responses.
+ */
+export interface SignupResponse {
+  /**
+   * Message
+   * @default "User registered successfully"
+   */
+  message?: string;
+  user: UserOut;
+}
+
+/**
+ * TokenObtainRequest
+ * Schema for obtaining tokens (login).
+ */
+export interface TokenObtainRequest {
+  /**
+   * Email
+   * @example "m@example.com"
+   */
+  email: string;
+  /**
+   * Password
+   * @example "securepassword123"
+   */
   password: string;
 }
 
-export interface TokenObtainPairResponse {
-  access: string;
-  refresh: string;
-}
-
+/**
+ * TokenRefreshRequest
+ * Schema for refreshing tokens.
+ */
 export interface TokenRefreshRequest {
+  /** Refresh */
   refresh: string;
 }
 
-export interface TokenRefreshResponse {
+/**
+ * TokenResponse
+ * Schema for token responses (both obtain and refresh).
+ */
+export interface TokenResponse {
+  /** Access */
   access: string;
+  /** Refresh */
+  refresh: string;
 }
 
-export interface UserProfile {
-  id: number;
-  /**
-   * Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
-   * @maxLength 150
-   * @pattern ^[\w.@+-]+$
-   */
+/** UserOut */
+export interface UserOut {
+  /** Id */
+  id: number | null;
+  /** Created At */
+  created_at: string | null;
+  /** Updated At */
+  updated_at: string | null;
+  /** Username */
   username: string;
   /**
-   * Email address
+   * Email
    * @format email
-   * @maxLength 254
    */
-  email?: string;
-  /** @format date-time */
-  date_joined: string;
-  /** @format date-time */
-  last_login: string | null;
+  email: string;
+  /** Is Active */
+  is_active: boolean;
+  /** Is Superuser */
+  is_superuser: boolean;
 }
 
-import type {
-  AxiosInstance,
-  AxiosRequestConfig,
-  AxiosResponse,
-  HeadersDefaults,
-  ResponseType,
-} from 'axios';
+/** ValidationError */
+export interface ValidationError {
+  /** Location */
+  loc: (string | number)[];
+  /** Message */
+  msg: string;
+  /** Error Type */
+  type: string;
+}
+
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, HeadersDefaults, ResponseType } from 'axios';
 import axios from 'axios';
 
 export type QueryParamsType = Record<string | number, any>;
 
-export interface FullRequestParams
-  extends Omit<AxiosRequestConfig, 'data' | 'params' | 'url' | 'responseType'> {
+export interface FullRequestParams extends Omit<AxiosRequestConfig, 'data' | 'params' | 'url' | 'responseType'> {
   /** set parameter to `true` for call `securityWorker` for this request */
   secure?: boolean;
   /** request path */
@@ -90,13 +137,9 @@ export interface FullRequestParams
   body?: unknown;
 }
 
-export type RequestParams = Omit<
-  FullRequestParams,
-  'body' | 'method' | 'query' | 'path'
->;
+export type RequestParams = Omit<FullRequestParams, 'body' | 'method' | 'query' | 'path'>;
 
-export interface ApiConfig<SecurityDataType = unknown>
-  extends Omit<AxiosRequestConfig, 'data' | 'cancelToken'> {
+export interface ApiConfig<SecurityDataType = unknown> extends Omit<AxiosRequestConfig, 'data' | 'cancelToken'> {
   securityWorker?: (
     securityData: SecurityDataType | null
   ) => Promise<AxiosRequestConfig | void> | AxiosRequestConfig | void;
@@ -118,16 +161,8 @@ export class HttpClient<SecurityDataType = unknown> {
   private secure?: boolean;
   private format?: ResponseType;
 
-  constructor({
-    securityWorker,
-    secure,
-    format,
-    ...axiosConfig
-  }: ApiConfig<SecurityDataType> = {}) {
-    this.instance = axios.create({
-      ...axiosConfig,
-      baseURL: axiosConfig.baseURL || '',
-    });
+  constructor({ securityWorker, secure, format, ...axiosConfig }: ApiConfig<SecurityDataType> = {}) {
+    this.instance = axios.create({ ...axiosConfig, baseURL: axiosConfig.baseURL || '' });
     this.secure = secure;
     this.format = format;
     this.securityWorker = securityWorker;
@@ -137,10 +172,7 @@ export class HttpClient<SecurityDataType = unknown> {
     this.securityData = data;
   };
 
-  protected mergeRequestParams(
-    params1: AxiosRequestConfig,
-    params2?: AxiosRequestConfig
-  ): AxiosRequestConfig {
+  protected mergeRequestParams(params1: AxiosRequestConfig, params2?: AxiosRequestConfig): AxiosRequestConfig {
     const method = params1.method || (params2 && params2.method);
 
     return {
@@ -148,11 +180,7 @@ export class HttpClient<SecurityDataType = unknown> {
       ...params1,
       ...(params2 || {}),
       headers: {
-        ...((method &&
-          this.instance.defaults.headers[
-            method.toLowerCase() as keyof HeadersDefaults
-          ]) ||
-          {}),
+        ...((method && this.instance.defaults.headers[method.toLowerCase() as keyof HeadersDefaults]) || {}),
         ...(params1.headers || {}),
         ...((params2 && params2.headers) || {}),
       },
@@ -173,15 +201,11 @@ export class HttpClient<SecurityDataType = unknown> {
     }
     return Object.keys(input || {}).reduce((formData, key) => {
       const property = input[key];
-      const propertyContent: any[] =
-        property instanceof Array ? property : [property];
+      const propertyContent: any[] = property instanceof Array ? property : [property];
 
       for (const formItem of propertyContent) {
         const isFileType = formItem instanceof Blob || formItem instanceof File;
-        formData.append(
-          key,
-          isFileType ? formItem : this.stringifyFormItem(formItem)
-        );
+        formData.append(key, isFileType ? formItem : this.stringifyFormItem(formItem));
       }
 
       return formData;
@@ -205,21 +229,11 @@ export class HttpClient<SecurityDataType = unknown> {
     const requestParams = this.mergeRequestParams(params, secureParams);
     const responseFormat = format || this.format || undefined;
 
-    if (
-      type === ContentType.FormData &&
-      body &&
-      body !== null &&
-      typeof body === 'object'
-    ) {
+    if (type === ContentType.FormData && body && body !== null && typeof body === 'object') {
       body = this.createFormData(body as Record<string, unknown>);
     }
 
-    if (
-      type === ContentType.Text &&
-      body &&
-      body !== null &&
-      typeof body !== 'string'
-    ) {
+    if (type === ContentType.Text && body && body !== null && typeof body !== 'string') {
       body = JSON.stringify(body);
     }
 
@@ -238,228 +252,80 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title No title
- * @version 0.0.0
+ * @title FastAPI Project
+ * @version v1
+ *
+ * Project description goes here
  */
-export class Api<
-  SecurityDataType extends unknown,
-> extends HttpClient<SecurityDataType> {
-  api = {
+export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+  auth = {
     /**
-     * @description OpenApi3 schema for this API. Format can be selected via content negotiation. - YAML: application/vnd.oai.openapi - JSON: application/vnd.oai.openapi+json
+     * @description Endpoint for user registration.
      *
-     * @tags api
-     * @name ApiSchemaRetrieve
-     * @request GET:/api/schema/
-     * @secure
+     * @tags auth, auth
+     * @name SignupUserAuthSignupPost
+     * @summary Signup User
+     * @request POST:/auth/signup
      */
-    apiSchemaRetrieve: (
-      query?: {
-        format?: 'json' | 'yaml';
-        lang?:
-          | 'af'
-          | 'ar'
-          | 'ar-dz'
-          | 'ast'
-          | 'az'
-          | 'be'
-          | 'bg'
-          | 'bn'
-          | 'br'
-          | 'bs'
-          | 'ca'
-          | 'ckb'
-          | 'cs'
-          | 'cy'
-          | 'da'
-          | 'de'
-          | 'dsb'
-          | 'el'
-          | 'en'
-          | 'en-au'
-          | 'en-gb'
-          | 'eo'
-          | 'es'
-          | 'es-ar'
-          | 'es-co'
-          | 'es-mx'
-          | 'es-ni'
-          | 'es-ve'
-          | 'et'
-          | 'eu'
-          | 'fa'
-          | 'fi'
-          | 'fr'
-          | 'fy'
-          | 'ga'
-          | 'gd'
-          | 'gl'
-          | 'he'
-          | 'hi'
-          | 'hr'
-          | 'hsb'
-          | 'hu'
-          | 'hy'
-          | 'ia'
-          | 'id'
-          | 'ig'
-          | 'io'
-          | 'is'
-          | 'it'
-          | 'ja'
-          | 'ka'
-          | 'kab'
-          | 'kk'
-          | 'km'
-          | 'kn'
-          | 'ko'
-          | 'ky'
-          | 'lb'
-          | 'lt'
-          | 'lv'
-          | 'mk'
-          | 'ml'
-          | 'mn'
-          | 'mr'
-          | 'ms'
-          | 'my'
-          | 'nb'
-          | 'ne'
-          | 'nl'
-          | 'nn'
-          | 'os'
-          | 'pa'
-          | 'pl'
-          | 'pt'
-          | 'pt-br'
-          | 'ro'
-          | 'ru'
-          | 'sk'
-          | 'sl'
-          | 'sq'
-          | 'sr'
-          | 'sr-latn'
-          | 'sv'
-          | 'sw'
-          | 'ta'
-          | 'te'
-          | 'tg'
-          | 'th'
-          | 'tk'
-          | 'tr'
-          | 'tt'
-          | 'udm'
-          | 'ug'
-          | 'uk'
-          | 'ur'
-          | 'uz'
-          | 'vi'
-          | 'zh-hans'
-          | 'zh-hant';
-      },
-      params: RequestParams = {}
-    ) =>
-      this.request<Record<string, any>, any>({
-        path: `/api/schema/`,
-        method: 'GET',
-        query: query,
-        secure: true,
+    signupUserAuthSignupPost: (data: SignupRequest, params: RequestParams = {}) =>
+      this.request<SignupResponse, HTTPValidationError>({
+        path: `/auth/signup`,
+        method: 'POST',
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Endpoint for obtaining access and refresh tokens.
+     *
+     * @tags auth, auth
+     * @name ObtainTokenAuthTokenObtainPost
+     * @summary Obtain Token
+     * @request POST:/auth/token/obtain
+     */
+    obtainTokenAuthTokenObtainPost: (data: TokenObtainRequest, params: RequestParams = {}) =>
+      this.request<TokenResponse, HTTPValidationError>({
+        path: `/auth/token/obtain`,
+        method: 'POST',
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Endpoint for refreshing the access token.
+     *
+     * @tags auth, auth
+     * @name RefreshTokenAuthTokenRefreshPost
+     * @summary Refresh Token
+     * @request POST:/auth/token/refresh
+     */
+    refreshTokenAuthTokenRefreshPost: (data: TokenRefreshRequest, params: RequestParams = {}) =>
+      this.request<TokenResponse, HTTPValidationError>({
+        path: `/auth/token/refresh`,
+        method: 'POST',
+        body: data,
+        type: ContentType.Json,
         format: 'json',
         ...params,
       }),
   };
-  auth = {
+  health = {
     /**
-     * @description Get user profile information
+     * @description Basic health check endpoint.
      *
-     * @tags Profile
-     * @name AuthProfileRetrieve
-     * @request GET:/auth/profile/
-     * @secure
+     * @tags system
+     * @name HealthCheckHealthGet
+     * @summary Health Check
+     * @request GET:/health
      */
-    authProfileRetrieve: (params: RequestParams = {}) =>
-      this.request<UserProfile, any>({
-        path: `/auth/profile/`,
+    healthCheckHealthGet: (params: RequestParams = {}) =>
+      this.request<any, any>({
+        path: `/health`,
         method: 'GET',
-        secure: true,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Update user profile information
-     *
-     * @tags Profile
-     * @name AuthProfileUpdate
-     * @request PUT:/auth/profile/
-     * @secure
-     */
-    authProfileUpdate: (data: UserProfile, params: RequestParams = {}) =>
-      this.request<UserProfile, void>({
-        path: `/auth/profile/`,
-        method: 'PUT',
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Register a new user
-     *
-     * @tags Authentication
-     * @name AuthRegisterCreate
-     * @request POST:/auth/register/
-     * @secure
-     */
-    authRegisterCreate: (data: RegisterRequest, params: RequestParams = {}) =>
-      this.request<UserProfile, void>({
-        path: `/auth/register/`,
-        method: 'POST',
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Obtain JWT token pair with username and password
-     *
-     * @tags Authentication
-     * @name AuthTokenObtainCreate
-     * @request POST:/auth/token/obtain/
-     */
-    authTokenObtainCreate: (
-      data: TokenObtainPairRequest,
-      params: RequestParams = {}
-    ) =>
-      this.request<TokenObtainPairResponse, void>({
-        path: `/auth/token/obtain/`,
-        method: 'POST',
-        body: data,
-        type: ContentType.Json,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Obtain new access token using refresh token
-     *
-     * @tags Authentication
-     * @name AuthTokenRefreshCreate
-     * @request POST:/auth/token/refresh/
-     */
-    authTokenRefreshCreate: (
-      data: TokenRefreshRequest,
-      params: RequestParams = {}
-    ) =>
-      this.request<TokenRefreshResponse, void>({
-        path: `/auth/token/refresh/`,
-        method: 'POST',
-        body: data,
-        type: ContentType.Json,
         format: 'json',
         ...params,
       }),
