@@ -1,27 +1,35 @@
-import { Box } from '@mui/material';
+import React from 'react';
 
-const Logo = ({ width = 40, height = 40, color = 'primary', sx = {} }) => {
+interface LogoProps {
+  size?: string;
+  color?: string;
+  title?: string;
+}
+
+const Logo: React.FC<LogoProps> = ({
+  size = 'w-12 h-12',
+  color = 'text-blue-500',
+  title = 'My Logo',
+}) => {
   return (
-    <Box
-      component="svg"
-      width={width}
-      height={height}
-      viewBox="0 0 100 100"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      sx={{ display: 'inline-block', ...sx }}
+    <div
+      className={`flex items-center justify-center ${size} ${color}`}
+      aria-label={title}
+      role="img"
     >
-      <circle cx="50" cy="50" r="50" fill="currentColor" />
-
-      <polygon points="50,20 70,70 30,70" fill="white" />
-
-      <circle
-        cx="50"
-        cy="50"
-        r="10"
-        fill={color === 'primary' ? 'currentColor' : color}
-      />
-    </Box>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="w-full h-full"
+      >
+        <path
+          fillRule="evenodd"
+          d="M12 2a10 10 0 100 20 10 10 0 000-20zm1.414 13.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 1.414L12.828 12l1.586 1.586a1 1 0 01-1.414 1.414z"
+          clipRule="evenodd"
+        />
+      </svg>
+    </div>
   );
 };
 
